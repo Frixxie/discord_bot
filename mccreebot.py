@@ -6,7 +6,7 @@ import datetime
 now = datetime.datetime.now()
 clock = str(datetime.time(now.hour, now.minute, now.second))
 
-TOKEN = 'Nzg1OTk4OTI0MzIxMjU5NTMx.X9AAig.xFkKksw1csWTjS9wXnjAdUCs3r4' 
+TOKEN = open("/home/adrian/projects/mccreebottoken").readline() 
 GUILD =  'Team Avatar'
 client = discord.Client()
 
