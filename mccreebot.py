@@ -4,9 +4,14 @@ from discord.ext import tasks, commands
 import datetime
 import asyncio
 
+# Path for the Token of the bot
+TOKEN = open("/home/adrian/projects/discord_info/mccreebottoken").readline() 
 
-TOKEN = open("/home/adrian/projects/mccreebottoken").readline() 
-GUILD =  'Team Avatar'
+# Basically the servername it is connected to
+GUILD = open("/home/adrian/projects/discord_info/GUILD").readline()
+
+# ID of channel
+CHANNEL_ID = 732675460135125003
 client = discord.Client()
 
 @client.event
@@ -28,14 +33,15 @@ async def send_message():
     while not client.is_closed(): 
         now = datetime.datetime.now()
         clock = str(datetime.time(now.hour, now.minute))
-        if clock == "12:00":
+        if clock == "12:00:00":
             print("It's "+str(now.hour)+":"+str(now.minute))
             txt = "It's High Noon!!!"
-            channel = client.get_channel(id=785975501470695505)   
+            channel = client.get_channel(id=CHANNEL_ID)   
+            
             await channel.send(txt,file=discord.File('highnoon.jpg'))
             await asyncio.sleep(120)
         else:
-            await asyncio.sleep(15)
+            await asyncio.sleep(5)
             continue
 
 @client.event
