@@ -7,17 +7,22 @@ class calender_parser:
         self.events = list()
 
     def _load(self, filename):
-        "TODO: errorchecking"
+        """
+        TODO: Errorchecking
+        """
         with open(filename) as f:
             return f.read()
 
     def create_events(self):
+        """
+        TODO: Errorchecking
+        """
         for event in self.calendar.events:
             self.events.append([event.name, event.begin.timestamp])
-
         self.events.sort(key=lambda val: val[1])
         for event in self.events:
             print(event)
+        print(len(self.events))
 
     def get_events(self):
         """
