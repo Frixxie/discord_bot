@@ -19,7 +19,7 @@ class calender_parser:
         for event in self.events:
             print(event)
 
-    def get_events():
+    def get_events(self):
         """
         it is bad i know
         """
