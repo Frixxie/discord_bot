@@ -11,7 +11,7 @@ class calender_parser:
         with open(filename) as f:
             return f.read()
 
-    def crate_events(self):
+    def create_events(self):
         for event in self.calendar.events:
             self.events.append([event.name, event.begin.timestamp])
 
@@ -19,8 +19,17 @@ class calender_parser:
         for event in self.events:
             print(event)
 
+    def get_events():
+        """
+        it is bad i know
+        """
+        if len(self.events) > 0:
+            return self.events
+        else:
+            self.create_events()
+            return self.events
 
 
 if __name__ == '__main__':
     cp = calender_parser("calendar.ics")
-    cp.crate_events()
+    cp.create_events()
