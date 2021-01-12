@@ -13,7 +13,7 @@ class calender_parser:
 
     def crate_events(self):
         for event in self.calendar.events:
-            self.events.append((event.name, event.begin.timestamp))
+            self.events.append([event.name, event.begin.timestamp])
 
         self.events.sort(key=lambda val: val[1])
         for event in self.events:
