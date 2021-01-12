@@ -3,7 +3,7 @@ import requests
 import time
 import re
 
-class Event: 
+class Event:
     def __init__(self, name, timestamp, desc, lecture):
         self.name = name
         self.timestamp = timestamp
@@ -15,7 +15,7 @@ class Event:
 
 class Calendar_parser:
     def __init__(self, url):
-        self.content = requests.get(url).text 
+        self.content = requests.get(url).text
         self.calendar = Calendar(self.content)
         self.events = list()
 
