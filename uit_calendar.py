@@ -4,6 +4,9 @@ import time
 import re
 
 class Event:
+    """
+    Custom Event object
+    """
     def __init__(self, name, timestamp, desc, lecture):
         self.name = name
         self.timestamp = timestamp
@@ -11,15 +14,25 @@ class Event:
         self.lecture = lecture
 
     def __str__(self):
+        """
+        Makes it able to print
+        """
         return f"{self.name}, {time.ctime(self.timestamp)}, {self.desc}, {self.lecture}"
 
-class Calendar_parser:
+class Calendar_util:
+    """
+    Main class
+    """
     def __init__(self, url):
         self.content = requests.get(url).text
         self.calendar = Calendar(self.content)
         self.events = list()
 
     def create_events(self):
+        """
+        Populates the events in the calendar_util
+        And sorts the list by unixtime stamp
+        """
         for event in self.calendar.events:
             if re.search(r'Forelesning', event.description, re.M|re.I) or re.search(r'Lecture', event.description, re.M|re.I):
                 self.events.append(Event(event.name, event.begin.timestamp, event.description, True))
@@ -28,10 +41,17 @@ class Calendar_parser:
         self.events.sort(key=lambda e: e.timestamp)
 
     def print_events(self):
+        """
+        Prints the events in the calendar
+        """
         for event in self.events:
             print(event)
 
     def get_next_lecture(self, lim = 60*15):
+        """
+        Finds the next events within the lim, default within the next 15 min
+        Will always return a list
+        """
         time_now = int(time.time())
         upcoming_events = list()
         for event in self.events:
@@ -49,6 +69,6 @@ if __name__ == '__main__':
     url = "https://timeplan.uit.no/calendar.ics?sem=21v"
     for course in courses:
         url += f"&module[]={course}"
-    cp = Calendar_parser(url)
-    cp.create_events()
-    cp.get_next_lecture(60*60*24*3)
+    cu = Calendar_util(url)
+    cu.create_events()
+    cu.get_next_lecture(60*60*24*3)
