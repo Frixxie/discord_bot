@@ -30,7 +30,7 @@ class Calendar_util:
 
     def create_events(self):
         """
-        Populates the events in the calendar_util
+        Populates the events in the calendar_util grouped by lecture and not lecture
         And sorts the list by unixtime stamp
         """
         for event in self.calendar.events:
@@ -63,6 +63,26 @@ class Calendar_util:
             print(event)
         return upcoming_events
 
+    def get_next_upcoming_lecture(self):
+        time_now = int(time.time())
+        upcoming_events = list()
+        for i, event in enumerate(self.events):
+            if event.timestamp - time_now > 0 and event.lecture:
+                upcoming_events.append(event)
+                j = i
+                next_event = self.events[j + 1]
+                while event.timestamp == next_event.timestamp:
+                    next_event = self.events[j]
+                    if next_event.lecture:
+                        upcoming_events.append(next_event)
+                    j += 1
+                break
+        for event in upcoming_events:
+            print(event)
+        return upcoming_events
+
+
+
 
 if __name__ == '__main__':
     courses = ["INF-2900-1", "INF-2310-1", "INF-1400-1", "MAT-2300-1", "MAT-1002-1", "FIL-0700-1", "BED-2017-1"]
@@ -72,3 +92,4 @@ if __name__ == '__main__':
     cu = Calendar_util(url)
     cu.create_events()
     cu.get_next_lecture(60*60*24*3)
+    cu.get_next_upcoming_lecture()
