@@ -59,8 +59,8 @@ class Calendar_util:
                 upcoming_events.append(event)
             if event.timestamp - time_now > lim:
                 break
-        for event in upcoming_events:
-            print(event)
+        # for event in upcoming_events:
+        #     print(event)
         return upcoming_events
 
     def get_next_upcoming_lecture(self):
@@ -77,8 +77,8 @@ class Calendar_util:
                         upcoming_events.append(next_event)
                     j += 1
                 break
-        for event in upcoming_events:
-            print(event)
+        # for event in upcoming_events:
+        #     print(event)
         return upcoming_events
 
 
