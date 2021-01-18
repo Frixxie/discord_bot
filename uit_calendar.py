@@ -93,3 +93,10 @@ if __name__ == '__main__':
     cu.create_events()
     cu.get_next_lecture(60*60*24*3)
     cu.get_next_upcoming_lecture()
+
+
+
+
+
+
+
