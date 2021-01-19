@@ -5,15 +5,17 @@ import datetime
 import time
 import asyncio
 from uit_calendar import Calendar_util
-
+import random
 
 TOKEN = open("/home/adrian/projects/discord_info/garbagetoken").readline() 
 GUILD =  'karantenejobbing'
 HELG = 746320599734943744
 SCHEDULE = 746008830638424211
 client = commands.Bot(command_prefix="$")
-
-
+bad_responds = ["Hey man I am doing my best {0.author.mention} fucking scrub ", "Let's see if you can do better {0.author.mention} :joy:", "Fuck off {0.author.mention}", "Take a hike on the highway {0.author.mention}", "At least I did something {0.author.mention} you useless trash "]
+br_size = len(bad_responds)-1
+good_responds = ["Thank you :D ", "I know, I'm the best :sunglasses:","Fine piece of work {0.author.mention}"]
+gr_size = len(good_responds)-1
 
 
 @client.event
@@ -72,16 +74,18 @@ async def send_message():
             lectures = cu.get_next_lecture(60*60*24)
         else:
             next_lecture = cu.get_next_upcoming_lecture()
+            print(next_lecture)
             for i, nl in enumerate(next_lecture):
-                channel = client.get_channel(id=SCHEDULE)   
+                print(str(nl.timestamp-timestamp), str(60*15))
+                channel = client.get_channel(id=SCHEDULE)
                 if nl.timestamp - timestamp <= 60*15 and not sent:
+                    print("sent lecture notification")
                     msg = f"@everyone\n Garbage man here, lecture in {nl.name} is coming up within 15 min"
                     await channel.send(msg)
                 if i+1 == len(next_lecture):
                     sent = 1
                 elif now.minute >= 15:
                     sent = 0
-                    
 
             await asyncio.sleep(15)
             continue
@@ -92,11 +96,14 @@ async def on_message(message):
     if message.author.id == client.user.id:
         return
     
-    if message.content.startswith('bad bot') or message.content.startswith('Bad bot'):
-        await message.channel.send('Hey I am doing best {0.author.mention} fucking scrub'.format(message))
-
-    elif message.content.startswith('fuck you') or message.content.startswith('screw you'):
-        await message.channel.send('Hey I am doing best {0.author.mention} fucking scrub'.format(message))
+    if message.content.startswith('bad bot') or message.content.startswith('Bad bot') or message.content.startswith('fuck you') or message.content.startswith('screw you'):
+        i = random.randint(0,br_size)
+        await message.channel.send(bad_responds[i].format(message))
+    
+    elif message.content.startswith('nice job') or message.content.startswith('good bot') or message.content.startswith('good job') or message.content.startswith('bot good'):
+        i = random.randint(0,gr_size)
+        await message.channel.send(good_responds[i].format(message))
+    
 
 client.loop.create_task(send_message())
 client.run(TOKEN)
