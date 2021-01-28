@@ -7,7 +7,7 @@ import asyncio
 from uit_calendar import Calendar_util
 import random
 
-TOKEN = open("/home/fredrik/discord_info/garbagetoken").readline() 
+TOKEN = open("/home/fredrik/projects/discord_info/garbagetoken").readline() 
 GUILD =  'karantenejobbing'
 HELG = 746320599734943744
 SCHEDULE = 746008830638424211
@@ -26,26 +26,15 @@ async def on_ready():
     #await client.change_presence(activity=discord.Game('Overwatch'))
 
     await client.change_presence(activity=discord.Streaming(name='Ass and titties', url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO'))
-    print(
-        f'{client.user} is connected to the following guild:\n'
-        f'{guild.name}(id: {guild.id})'
-    )
+    print(f'{client.user} is connected to the following guild:\n', f'{guild.name}(id: {guild.id})')
 
 
-async def send_message():
+async def send_message(cu):
     await client.wait_until_ready()
-    courses = ["INF-2900-1", "INF-2310-1", "INF-1400-1", "MAT-2300-1", "MAT-1002-1", "FIL-0700-1", "BED-2017-1"]
-    url = "https://timeplan.uit.no/calendar.ics?sem=21v"
-    for course in courses:
-        url += f"&module[]={course}"
-    cu = Calendar_util(url)
-    cu.create_events()
-    lectures = cu.get_next_lecture(60*60*24)
+    next_lectures = cu.get_next_lecture(60*60*24)
     print("Entered loop") 
-    sent = 0    
     while not client.is_closed(): 
         now = datetime.datetime.now()
-        timestamp = int(datetime.datetime.now().timestamp())
         clock = str(datetime.time(now.hour, now.minute))
         weekday = datetime.datetime.today().weekday()
     
@@ -67,30 +56,31 @@ async def send_message():
             channel = client.get_channel(id=HELG)   
             await channel.send(txt,file=discord.File('helg.gif'))
             await asyncio.sleep(120)
-        
-        elif clock == "23:59:00" and weekday <= 4:
-            cu = Calendar_util(url)
-            cu.create_events()
-            lectures = cu.get_next_lecture(60*60*24)
-        else:
-            next_lecture = cu.get_next_upcoming_lecture()
-            print(next_lecture)
-            for i, nl in enumerate(next_lecture):
-                print(str(nl.timestamp-timestamp), str(60*15), sent)
+
+        elif clock == "23:59:00":
+            cu.update_events()
+            next_lectures = cu.get_next_lecture(60*60*24)
+            txt = "Pulled calendar"
+            channel = client.get_channel(id=SCHEDULE)
+            await channel.send(txt)
+            await asyncio.sleep(60)
+ 
+        elif len(next_lectures) > 0:
+
+            for lecture in next_lectures:
+                print(lecture)
+
+            timestamp = int(datetime.datetime.now().timestamp())
+            print(str(next_lectures[0].timestamp - timestamp), str(60*15))
+
+            if next_lectures[0].timestamp - timestamp < 60*15:
                 channel = client.get_channel(id=SCHEDULE)
-                if nl.timestamp - timestamp <= 60*15 and sent == 0:
-                    print("sent lecture notification")
-                    msg = f"@everyone\n Garbage man here, lecture in {nl.name} is coming up within 15 min"
-                    await channel.send(msg)
-                    if i+1 == len(next_lecture):
-                        sent = 1
-            if now.minute >= 15:
-                print("sent is reset")
-                sent = 0
+                lecture = next_lectures.pop(0)
+                msg = f"@everyone Garbage man here, lecture in {lecture.name} is coming up within 15 min"
+                await channel.send(msg)
+                print("sent lecture notification")
 
-            await asyncio.sleep(15)
-            continue
-
+        await asyncio.sleep(1)
 
 @client.event
 async def on_message(message):
@@ -105,6 +95,11 @@ async def on_message(message):
         i = random.randint(0,gr_size)
         await message.channel.send(good_responds[i].format(message))
     
-
-client.loop.create_task(send_message())
-client.run(TOKEN)
+if __name__ == '__main__':
+    courses = ["INF-2900-1", "INF-2310-1", "INF-1400-1", "MAT-2300-1", "MAT-1002-1", "FIL-0700-1", "BED-2017-1"]
+    url = "https://timeplan.uit.no/calendar.ics?sem=21v"
+    for course in courses:
+        url += f"&module[]={course}"
+    cu = Calendar_util(url)
+    client.loop.create_task(send_message(cu))
+    client.run(TOKEN)

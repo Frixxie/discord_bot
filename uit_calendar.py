@@ -12,33 +12,42 @@ class Event:
         self.timestamp = timestamp
         self.desc = desc
         self.lecture = lecture
+        self.sent = False
 
     def __str__(self):
         """
         Makes it able to print
         """
-        return f"{self.name}, {time.ctime(self.timestamp)}, {self.desc}, {self.lecture}"
+        return f"{self.name}, {time.ctime(self.timestamp)}, {self.desc}, {self.lecture}, {self.sent}"
 
 class Calendar_util:
     """
     Main class
     """
     def __init__(self, url):
-        self.content = requests.get(url).text
+        self.url = url
+        self.content = requests.get(self.url).text
         self.calendar = Calendar(self.content)
-        self.events = list()
+        self.events = self.create_events()
 
     def create_events(self):
         """
         Populates the events in the calendar_util grouped by lecture and not lecture
         And sorts the list by unixtime stamp
         """
+        events = list()
         for event in self.calendar.events:
             if re.search(r'Forelesning', event.description, re.M|re.I) or re.search(r'Lecture', event.description, re.M|re.I):
-                self.events.append(Event(event.name, event.begin.timestamp, event.description, True))
+                events.append(Event(event.name, event.begin.timestamp, event.description, True))
             else:
-                self.events.append(Event(event.name, event.begin.timestamp, event.description, False))
-        self.events.sort(key=lambda e: e.timestamp)
+                events.append(Event(event.name, event.begin.timestamp, event.description, False))
+        events.sort(key=lambda e: e.timestamp)
+        return events
+
+    def update_events(self):
+        self.content = requests.get(self.url).text
+        self.calendar = Calendar(self.content)
+        self.events = self.create_events()
 
     def print_events(self):
         """
@@ -59,8 +68,6 @@ class Calendar_util:
                 upcoming_events.append(event)
             if event.timestamp - time_now > lim:
                 break
-        # for event in upcoming_events:
-        #     print(event)
         return upcoming_events
 
     def get_next_upcoming_lecture(self):
@@ -77,11 +84,7 @@ class Calendar_util:
                         upcoming_events.append(next_event)
                     j += 1
                 break
-        # for event in upcoming_events:
-        #     print(event)
         return upcoming_events
-
-
 
 
 if __name__ == '__main__':
@@ -90,13 +93,5 @@ if __name__ == '__main__':
     for course in courses:
         url += f"&module[]={course}"
     cu = Calendar_util(url)
-    cu.create_events()
-    cu.get_next_lecture(60*60*24*3)
-    cu.get_next_upcoming_lecture()
-
-
-
-
-
-
-
+    print(cu.get_next_lecture(60*60*24*3))
+    print(cu.get_next_upcoming_lecture())
