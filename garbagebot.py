@@ -7,7 +7,7 @@ import asyncio
 from uit_calendar import Calendar_util
 import random
 
-TOKEN = open("/home/adrian/projects/discord_info/garbagetoken").readline() 
+TOKEN = open("/home/fredrik/discord_info/garbagetoken").readline() 
 GUILD =  'karantenejobbing'
 HELG = 746320599734943744
 SCHEDULE = 746008830638424211
@@ -76,16 +76,17 @@ async def send_message():
             next_lecture = cu.get_next_upcoming_lecture()
             print(next_lecture)
             for i, nl in enumerate(next_lecture):
-                print(str(nl.timestamp-timestamp), str(60*15))
+                print(str(nl.timestamp-timestamp), str(60*15), sent)
                 channel = client.get_channel(id=SCHEDULE)
-                if nl.timestamp - timestamp <= 60*15 and not sent:
+                if nl.timestamp - timestamp <= 60*15 and sent == 0:
                     print("sent lecture notification")
                     msg = f"@everyone\n Garbage man here, lecture in {nl.name} is coming up within 15 min"
                     await channel.send(msg)
-                if i+1 == len(next_lecture):
-                    sent = 1
-                elif now.minute >= 15:
-                    sent = 0
+                    if i+1 == len(next_lecture):
+                        sent = 1
+            if now.minute >= 15:
+                print("sent is reset")
+                sent = 0
 
             await asyncio.sleep(15)
             continue
