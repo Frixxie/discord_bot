@@ -4,7 +4,7 @@ from discord.ext import tasks, commands
 import datetime
 import time
 import asyncio
-from uit_calendar import Calendar_util
+import uit_calendar_util
 import random
 
 TOKEN = open("/home/fredrik/projects/discord_info/garbagetoken").readline() 
@@ -60,10 +60,6 @@ async def send_message(cu):
         elif clock == "23:59:00":
             cu.update_events()
             next_lectures = cu.get_next_lecture(60*60*24)
-            txt = "Pulled calendar"
-            channel = client.get_channel(id=SCHEDULE)
-            await channel.send(txt)
-            await asyncio.sleep(60)
  
         elif len(next_lectures) > 0:
 
@@ -98,8 +94,6 @@ async def on_message(message):
 if __name__ == '__main__':
     courses = ["INF-2900-1", "INF-2310-1", "INF-1400-1", "MAT-2300-1", "MAT-1002-1", "FIL-0700-1", "BED-2017-1"]
     url = "https://timeplan.uit.no/calendar.ics?sem=21v"
-    for course in courses:
-        url += f"&module[]={course}"
-    cu = Calendar_util(url)
+    cu = uit_calendar_util.Calendar_util(url, courses)
     client.loop.create_task(send_message(cu))
     client.run(TOKEN)
