@@ -1,4 +1,4 @@
-TOKEN = open("/home/fredrik/projects/discord_info/garbagetoken").readline() 
+TOKEN = open("/home/adrian/projects/discord_info/garbagetoken").readline() 
 GUILD =  'karantenejobbing'
 HELG = 746320599734943744
 SCHEDULE = 746008830638424211
